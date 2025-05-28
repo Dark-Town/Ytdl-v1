@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>YouTube Downloader</title>
+</head>
+<body>
+  <h2>Download YouTube Video</h2>
+  <input id="url" type="text" size="60" placeholder="Paste YouTube URL here" />
+  <button onclick="downloadVideo()">Download</button>
+
+  <script>
+    function downloadVideo() {
+      const url = document.getElementById('url').value;
+      if (!url) {
+        alert('Please enter a YouTube URL');
+        return;
+      }
+      const apiUrl = `https://your-server/download?url=${encodeURIComponent(url)}`;
+      const a = document.createElement('a');
+      a.href = apiUrl;
+      a.download = ''; // This hints the browser to download
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    }
+  </script>
+</body>
+</html>
