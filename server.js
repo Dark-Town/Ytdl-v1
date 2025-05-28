@@ -1,18 +1,32 @@
+const { exec } = require('child_process');
 const express = require('express');
-const cors = require('cors');
-const ytdl = require('ytdl-core');
-
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(cors());
+app.get('/download', (req, res) => {
+  const videoURL = req.query.url;
+  if (!videoURL) {
+    return res.status(400).send('No URL provided');
+  }
 
-// Your helper functions here (e.g. convertShortsURL)
+  const command = `yt-dlp -f best -o - "${videoURL}"`;
 
-app.get('/download', async (req, res) => {
-  // Your download code here
+  const process = exec(command, { maxBuffer: Infinity });
+
+  res.setHeader('Content-Disposition', 'attachment; filename="video.mp4"');
+  res.setHeader('Content-Type', 'video/mp4');
+
+  process.stdout.pipe(res);
+
+  process.stderr.on('data', (data) => {
+    console.error(`stderr: ${data}`);
+  });
+
+  process.on('close', (code) => {
+    console.log(`yt-dlp process exited with code ${code}`);
+  });
 });
 
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`Server is running on port ${PORT}`);
 });
